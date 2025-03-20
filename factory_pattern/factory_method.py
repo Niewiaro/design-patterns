@@ -71,6 +71,7 @@ def main() -> None:
     print("JSON")
     json_factory = extract_data_from(config.json_path)
     json_data = json_factory.parsed_data
+    print(f"Received data type {type(json_data)}")
     print(f'Found: {len(json_data)} movies')
     for movie in json_data:
         print(f"Title: {movie['title']}")
@@ -89,6 +90,7 @@ def main() -> None:
     print("XML")
     xml_factory = extract_data_from(config.xml_path)
     xml_data = xml_factory.parsed_data
+    print(f"Received data type {type(xml_data)}")
     liars = xml_data.findall(f".//person[lastName='Liar']")
     print(f'found: {len(liars)} persons')
     for liar in liars:
@@ -104,6 +106,7 @@ def main() -> None:
     print("SQ3")
     sqlite_factory = extract_data_from(config.sq3_path)
     sqlite_data = sqlite_factory.parsed_data
+    print(f"Received data type {type(sqlite_data)}")
     print(f'found: {len(sqlite_data)} persons')
     for person in sqlite_data:
         person_id, firstname, lastname = person
