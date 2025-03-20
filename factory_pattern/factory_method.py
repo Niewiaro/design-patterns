@@ -32,15 +32,15 @@ class XMLDataExtractor:
 
 class SQ3DataExtractor:
     def __init__(self, filepath) -> None:
-        conn = sqlite3.connect(filepath)
-        cursor = conn.cursor()
-
-        cursor.execute("SELECT id, firstName, lastName FROM persons")
-        self.data = cursor.fetchall()
+        self.conn = sqlite3.connect(filepath)
+        self.cursor = self.conn.cursor()
 
     @property
     def parsed_data(self):
-        return self.data
+        return self.cursor
+
+    def __del__(self) -> None:
+        self.conn.close()
 
 
 def dataextraction_factory(filepath):
@@ -107,14 +107,20 @@ def main() -> None:
     sqlite_factory = extract_data_from(config.sq3_path)
     sqlite_data = sqlite_factory.parsed_data
     print(f"Received data type {type(sqlite_data)}")
-    print(f'found: {len(sqlite_data)} persons')
-    for person in sqlite_data:
+    sqlite_data.execute("SELECT id, firstName, lastName FROM persons WHERE lastName = 'Liar'")
+    liars = sqlite_data.fetchall()
+    print(f'found: {len(liars)} persons')
+    for person in liars:
         person_id, firstname, lastname = person
         print(f'first name: {firstname}')
         print(f'last name: {lastname}')
-        print()
 
-    print()
+        sqlite_data.execute("SELECT type, number FROM phoneNumbers WHERE person_id = ?", (person_id,))
+        phone_numbers = sqlite_data.fetchall()
+
+        for phone_type, phone_number in phone_numbers:
+            print(f"phone number ({phone_type}): {phone_number}")
+        print()
 
 
 if __name__ == "__main__":
