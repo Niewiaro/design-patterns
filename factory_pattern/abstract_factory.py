@@ -1,22 +1,37 @@
+import random
+
+
 class Frog:
     def __init__(self, name: str) -> None:
         self.name = name
+        self.energy = 10
 
     def __str__(self) -> str:
         return self.name
 
-    def interact_with(self, obstacle) -> None:
-        act = obstacle.action()
-        msg = f'{self} the Frog encounters {obstacle} and {act}!'
-        print(msg)
+    def interact_with(self, obstacle) -> str | None:
+        act = obstacle.action
+        self.energy -= obstacle.health
+        if self.energy <= 0:
+            return None
+        if obstacle.health == 1:
+            msg = f'{self} the Frog encounters a {obstacle} and {act}!'
+        else:
+            msg = f'{self} the Frog encounters the {obstacle.health} {obstacle}s and {act}!'
+        return msg
 
 
 class Bug:
     def __str__(self) -> str:
-        return 'a bug'
+        return 'bug'
 
+    @property
     def action(self) -> str:
         return 'eats it'
+
+    @property
+    def health(self) -> int:
+        return random.randint(1, 3)
 
 
 class FrogWorld:
@@ -37,22 +52,30 @@ class FrogWorld:
 class Wizard:
     def __init__(self, name: str) -> None:
         self.name = name
+        self.energy = 10000
 
     def __str__(self) -> str:
         return self.name
 
-    def interact_with(self, obstacle) -> None:
-        act = obstacle.action()
-        msg = f'{self} the Wizard battles against {obstacle} and {act}!'
-        print(msg)
+    def interact_with(self, obstacle) -> str | None:
+        act = obstacle.action
+        self.energy -= obstacle.health
+        if self.energy <= 0:
+            return None
+        return f'{self} the Wizard battles against {obstacle} with {obstacle.health} health and {act}!'
 
 
 class Ork:
     def __str__(self) -> str:
         return 'an evil ork'
 
+    @property
     def action(self) -> str:
         return 'kills it'
+
+    @property
+    def health(self) -> int:
+        return random.randint(100, 350)
 
 
 class WizardWorld:
@@ -75,12 +98,12 @@ class GameEnvironment:
         self.hero = factory.make_character()
         self.obstacle = factory.make_obstacle()
 
-    def play(self) -> None:
-        self.hero.interact_with(self.obstacle)
+    def play(self) -> str | None:
+        return self.hero.interact_with(self.obstacle)
 
 
 def validate_age(name: str, /, *, min_age: int = 1, max_age: int = 120, acceptable_age: int = 18,
-        max_attempts: int = 3) -> tuple[bool, int] | None:
+                 max_attempts: int = 3) -> tuple[bool, int] | None:
     """
     Prompts the user for their age, validates that it's an integer, and checks if it falls within the given age range.
 
@@ -125,7 +148,16 @@ def main() -> None:
     is_valid, _ = result
     game = WizardWorld if is_valid else FrogWorld
     environment = GameEnvironment(game(name))
-    environment.play()
+
+    x = 0
+    while True:
+        result = environment.play()
+        if result is None:
+            break
+        print(f"{x + 1}. {result}")
+        x += 1
+
+    print(f"END GAME\nSCORE: {x}!")
 
 
 if __name__ == "__main__":
