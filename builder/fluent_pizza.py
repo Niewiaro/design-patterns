@@ -73,3 +73,8 @@ def main() -> None:
 
 if __name__ == '__main__':
     main()
+
+# Klasyczny builder zapewnia większą kontrolę i lepszą czytelność przy złożonej logice budowy obiektu.
+# Fluent builder oferuje bardziej zwięzłą i czytelną składnię, lepszą do prostych i liniowych konstrukcji.
+# Fluent builder może być trudniejszy do debugowania i wymaga konsekwentnego zwracania self.
+# W przypadku prostych obiektów (np. pizza) fluent builder jest bardziej czytelny i preferowany.
