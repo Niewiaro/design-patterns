@@ -36,7 +36,6 @@ def is_singleton(verify_class):
     print(verify_class() is verify_class())
 
 
-
 def main() -> None:
     is_singleton(URLFetcher)
 
