@@ -36,11 +36,16 @@ def number_sum_memoize(n):
     return res
 
 
+def number_sum_fsum(n):
+    import math
+    return math.fsum([x for x in range(1, n + 1)])
+
+
 def main() -> None:
     from timeit import Timer
     number = 100
 
-    functions = ['number_sum', 'number_sum_cache', 'number_sum_memoize']
+    functions = ['number_sum', 'number_sum_cache', 'number_sum_memoize', 'number_sum_fsum']
 
     for f in functions:
         t = Timer(f'{f}({number})', f'from __main__ import {f}')
