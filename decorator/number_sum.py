@@ -1,3 +1,6 @@
+from my_math.decorators import memoize
+
+
 def number_sum(n):
     """Returns the sum of the first n numbers"""
     assert (n >= 0), 'n must be >= 0'
@@ -5,6 +8,7 @@ def number_sum(n):
         return 0
     else:
         return n + number_sum(n - 1)
+
 
 sum_cache = {0: 0}
 
@@ -20,11 +24,23 @@ def number_sum_cache(n):
     return res
 
 
+@memoize
+def number_sum_memoize(n):
+    """Returns the sum of the first n numbers"""
+    assert (n >= 0), 'n must be >= 0'
+    if n in sum_cache:
+        return sum_cache[n]
+    res = n + number_sum(n - 1)
+    # Add the value to the cache
+    sum_cache[n] = res
+    return res
+
+
 def main() -> None:
     from timeit import Timer
     number = 100
 
-    functions = ['number_sum', 'number_sum_cache']
+    functions = ['number_sum', 'number_sum_cache', 'number_sum_memoize']
 
     for f in functions:
         t = Timer(f'{f}({number})', f'from __main__ import {f}')
