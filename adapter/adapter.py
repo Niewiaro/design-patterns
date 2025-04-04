@@ -25,14 +25,19 @@ class Adapter:
 def main() -> None:
     objects = [Club('Jazz Cafe'), Musician('Roy Ayers'), Dancer('Shane Sparks')]
     for obj in objects:
-        if hasattr(obj, 'play') or hasattr(obj, 'dance'):
-            if hasattr(obj, 'play'):
-                adapted_methods = dict(organize_event=obj.play)
-            elif hasattr(obj, 'dance'):
-                adapted_methods = dict(organize_event=obj.dance)
+        # if hasattr(obj, 'play') or hasattr(obj, 'dance'):
+        #     if hasattr(obj, 'play'):
+        #         adapted_methods = dict(organize_event=obj.play)
+        #     elif hasattr(obj, 'dance'):
+        #         adapted_methods = dict(organize_event=obj.dance)
+        #
+        #     # referencing the adapted object here
+        #     obj = Adapter(obj, adapted_methods)
 
-            # referencing the adapted object here
-            obj = Adapter(obj, adapted_methods)
+        method = getattr(obj, 'play', None) or getattr(obj, 'dance', None)
+        if method:
+            obj = Adapter(obj, {'organize_event': method})
+
         print(f'{obj} {obj.organize_event()}')
 
 
