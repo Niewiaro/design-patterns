@@ -6,8 +6,8 @@ def number_sum(n):
     assert (n >= 0), 'n must be >= 0'
     if n == 0:
         return 0
-    else:
-        return n + number_sum(n - 1)
+
+    return n + number_sum(n - 1)
 
 
 sum_cache = {0: 0}
