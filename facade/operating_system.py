@@ -19,7 +19,7 @@ class File:
 class Server(metaclass=ABCMeta):
     @abstractmethod
     def __init__(self):
-        pass
+        self.name = None
 
     def __str__(self):
         return self.name
@@ -49,10 +49,24 @@ class FileServer(Server):
         '''actions required for killing the file server'''
         self.state = State.restart if restart else State.zombie
 
-    def create_file(self, user, name, permissions):
+    @staticmethod
+    def create_file(user, name, permissions):
         """check validity of permissions, user rights, etc."""
+        from pathlib import Path
+        
         print(f"trying to create the file '{name}' for user '{user}' "
               f"with permissions {permissions}")
+
+        file_path = Path(name)
+
+        if file_path.exists():
+            print(f"File '{name}' already exists. Skipping creation.")
+        else:
+            try:
+                file_path.write_text(f"# Created by {user} with permissions {permissions}\n")
+                print(f"File '{name}' created successfully.")
+            except Exception as e:
+                print(f"Failed creating file '{name}': {e}")
 
 
 class ProcessServer(Server):
@@ -71,7 +85,8 @@ class ProcessServer(Server):
         '''actions required for killing the process server'''
         self.state = State.restart if restart else State.zombie
 
-    def create_process(self, user, name):
+    @staticmethod
+    def create_process(user, name):
         """check user rights, generate PID, etc."""
         print(f"trying to create the process '{name}' for user '{user}'")
 
