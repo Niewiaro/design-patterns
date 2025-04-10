@@ -33,13 +33,17 @@ class URLFetcher(ResourceContentFetcher):
 
     def fetch(self, path):
         import urllib.request
-        # path is an URL
+        from urllib.error import URLError, HTTPError
 
-        req = urllib.request.Request(path)
-        with urllib.request.urlopen(req) as response:
-            if response.code == 200:
-                the_page = response.read()
-                print(the_page)
+        # path is an URL
+        try:
+            req = urllib.request.Request(path)
+            with urllib.request.urlopen(req) as response:
+                if response.code == 200:
+                    the_page = response.read()
+                    print(the_page)
+        except (URLError, HTTPError) as e:
+            print(f"Fail to fetch data from URL '{path}': {e}")
 
 
 class LocalFileFetcher(ResourceContentFetcher):
@@ -50,8 +54,11 @@ class LocalFileFetcher(ResourceContentFetcher):
 
     def fetch(self, path):
         # path is the filepath to a text file
-        with open(path) as f:
-            print(f.read())
+        try:
+            with open(path) as f:
+                print(f.read())
+        except FileNotFoundError:
+            print(f"File '{path}' not found.")
 
 
 def create_file_txt(filename):
@@ -70,9 +77,21 @@ def main() -> None:
 
     print('===================')
 
+    url_fetcher = URLFetcher()
+    iface = ResourceContent(url_fetcher)
+    iface.show_content('https://python.ogr')
+
+    print('===================')
+
     localfs_fetcher = LocalFileFetcher()
     iface = ResourceContent(localfs_fetcher)
     iface.show_content('file.txt')
+
+    print('===================')
+
+    localfs_fetcher = LocalFileFetcher()
+    iface = ResourceContent(localfs_fetcher)
+    iface.show_content('wrong_file.txt')
 
 
 if __name__ == "__main__":
