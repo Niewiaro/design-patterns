@@ -85,6 +85,11 @@ class ISensitiveInfo(ABC):
         """Adds a new user to the list."""
         pass
 
+    @abstractmethod
+    def remove(self, user):
+        """Removes a user from the list."""
+        pass
+
 
 class SensitiveInfo(ISensitiveInfo):
     """
@@ -119,6 +124,15 @@ class SensitiveInfo(ISensitiveInfo):
         self.users.append(user)
         print(f'Added user {user}')
 
+    def remove(self, user):
+        """Removes a user from the list."""
+        if user in self.users:
+            self.users.remove(user)
+            print(f'Removed user {user}')
+        else:
+            print(f'User {user} not found')
+
+
 
 class Info(ISensitiveInfo):
     """
@@ -152,6 +166,16 @@ class Info(ISensitiveInfo):
         else:
             print("Incorrect password!")
 
+    def remove(self, user):
+        """
+        Requests password verification before removing a user.
+        """
+        pw = input('Enter password: ')
+        if verify_password(pw, self.salt, self.hashed):
+            self.protected.remove(user)
+        else:
+            print("Incorrect password!")
+
 
 def main():
     """
@@ -159,7 +183,7 @@ def main():
     """
     info = Info()
     while True:
-        print('1. read list |==| 2. add user |==| 3. quit')
+        print('1. read list |==| 2. add user |==| 3. remove user |==| 4. quit')
         key = input('choose option: ')
         if key == '1':
             info.read()
@@ -167,6 +191,9 @@ def main():
             name = input('choose username: ')
             info.add(name)
         elif key == '3':
+            name = input('enter username to remove: ')
+            info.remove(name)
+        elif key == '4':
             print("Bye!")
             break
         else:
