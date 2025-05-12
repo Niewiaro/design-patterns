@@ -1,22 +1,47 @@
-class SensitiveInfo:
+from abc import ABC, abstractmethod
+
+
+class ISensitiveInfo(ABC):
+    @abstractmethod
+    def read(self):
+        pass
+
+    @abstractmethod
+    def add(self, user):
+        pass
+
+
+class SensitiveInfo(ISensitiveInfo):
+    __instance = None
+
     def __init__(self):
+        if not getattr(self, '_created_by_proxy', False):
+            raise RuntimeError("Use Info proxy to access SensitiveInfo")
         self.users = ['nick', 'tom', 'ben', 'mike']
 
+    @classmethod
+    def _create(cls):
+        if cls.__instance is None:
+            obj = cls.__new__(cls)
+            obj._created_by_proxy = True
+            cls.__init__(obj)
+            cls.__instance = obj
+        return cls.__instance
+
     def read(self):
-        nb = len(self.users)
-        print(f"There are {nb} users: {' '.join(self.users)}")
+        print(f"There are {len(self.users)} users: {' '.join(self.users)}")
 
     def add(self, user):
         self.users.append(user)
         print(f'Added user {user}')
 
 
-class Info:
-    """protection proxy to SensitiveInfo"""
+class Info(ISensitiveInfo):
+    """Protection Proxy to SensitiveInfo"""
 
     def __init__(self):
-        self.protected = SensitiveInfo()
         self.secret = '0xdeadbeef'
+        self.protected = SensitiveInfo._create()
 
     def read(self):
         self.protected.read()
