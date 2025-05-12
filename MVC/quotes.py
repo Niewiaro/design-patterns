@@ -46,6 +46,19 @@ class FancyQuoteView:
     def select_quote(self):
         return input("Enter quote number (or 'q' to quit): ")
 
+class CrazyTerminalView:
+    def show(self, quote):
+        result = quote.replace(' ', '*')
+        result = result[::-1]
+        result = result.swapcase()
+        print(f'And the quote is: "{result}"')
+
+    def error(self, msg):
+        print(f'Error: {msg}')
+
+    def select_quote(self):
+        return input("Enter quote number (or 'q' to quit): ")
+
 
 class QuoteTerminalController:
     def __init__(self, view):
@@ -73,13 +86,14 @@ def choose_view():
     print("Choose a view:")
     print("1 - Standard view")
     print("2 - Fancy view")
+    print("3 - Crazy view")
 
     valid_input = False
     choice = None
 
     while not valid_input:
         choice = input("Enter your choice: ")
-        if choice in ('1', '2'):
+        if choice in ('1', '2', '3'):
             valid_input = True
         else:
             print("Incorrect input. Please try again.")
@@ -87,6 +101,8 @@ def choose_view():
         return QuoteTerminalView()
     elif choice == '2':
         return FancyQuoteView()
+    else:
+        return CrazyTerminalView()
 
 
 def main():
