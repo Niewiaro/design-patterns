@@ -23,7 +23,20 @@ class Widget:
 
 class MainWindow(Widget):
     def handle_close(self, event):
+        from win32api import MessageBox
+        from win32con import MB_YESNO, MB_ICONQUESTION
+        from win32con import IDYES
+
         print(f'MainWindow: {event}')
+        result = MessageBox(
+            0,
+            "Do you really want to quit?",
+            "Are you sure?",
+            MB_YESNO | MB_ICONQUESTION
+        )
+        if result == IDYES:
+            import sys
+            sys.exit(0)
 
     def handle_default(self, event):
         print(f'MainWindow Default: {event}')
