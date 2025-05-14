@@ -52,11 +52,21 @@ class MsgText(Widget):
         print(f'MsgText: {event}')
 
 
+def handle_tiririri(self, event):
+    print(f"MsgText: {event}")
+
+
+import types
+
+
 def main():
     mw = MainWindow()
     sd = SendDialog(mw)
     msg = MsgText(sd)
-    for e in ('down', 'paint', 'unhandled', 'close'):
+    msg_new = MsgText(mw)
+    msg_new.handle_tiririri = types.MethodType(handle_tiririri, msg_new)
+
+    for e in ('tiririri', 'down', 'paint', 'unhandled', 'close'):
         evt = Event(e)
         print(f'Sending event -{evt}- to MainWindow')
         mw.handle(evt)
@@ -64,6 +74,8 @@ def main():
         sd.handle(evt)
         print(f'Sending event -{evt}- to MsgText')
         msg.handle(evt)
+        print(f'Sending event -{evt}- to MsgText New')
+        msg_new.handle(evt)
 
 
 if __name__ == "__main__":
