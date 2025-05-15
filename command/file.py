@@ -18,6 +18,9 @@ class RenameFile:
             print(f"[renaming '{self.dest}' back to '{self.src}']")
         os.rename(self.dest, self.src)
 
+    def can_be_undone(self):
+        return True
+
 
 def delete_file(path):
     if verbose:
@@ -39,6 +42,9 @@ class CreateFile:
     def undo(self):
         delete_file(self.path)
 
+    def can_be_undone(self):
+        return True
+
 
 class ReadFile:
     def __init__(self, path):
@@ -49,6 +55,9 @@ class ReadFile:
             print(f"[reading file '{self.path}']")
         with open(self.path, mode='r', encoding='utf-8') as in_file:
             print(in_file.read(), end='')
+
+    def can_be_undone(self):
+        return False
 
 
 def main():
@@ -62,10 +71,10 @@ def main():
         print(f"the result is {new_name}")
         exit()
     for c in reversed(commands):
-        try:
+        if c.can_be_undone():
             c.undo()
-        except AttributeError as e:
-            print("Error", str(e))
+        else:
+            print(f"Command {c.__class__.__name__} cannot be undone")
 
 
 if __name__ == '__main__':
