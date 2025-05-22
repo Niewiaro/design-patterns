@@ -26,29 +26,29 @@ class Process:
     def __init__(self, name):
         self.name = name
 
-        @after('wait')
-        def wait_info(self):
-            print(f'{self.name} entered waiting mode')
+    @after('wait')
+    def wait_info(self):
+        print(f'{self.name} entered waiting mode')
 
-        @after('run')
-        def run_info(self):
-            print(f'{self.name} is running')
+    @after('run')
+    def run_info(self):
+        print(f'{self.name} is running')
 
-        @before('terminate')
-        def terminate_info(self):
-            print(f'{self.name} terminated')
+    @before('terminate')
+    def terminate_info(self):
+        print(f'{self.name} terminated')
 
-        @after('block')
-        def block_info(self):
-            print(f'{self.name} is blocked')
+    @after('block')
+    def block_info(self):
+        print(f'{self.name} is blocked')
 
-        @after('swap_wait')
-        def swap_wait_info(self):
-            print(f'{self.name} is swapped out and waiting')
+    @after('swap_wait')
+    def swap_wait_info(self):
+        print(f'{self.name} is swapped out and waiting')
 
-        @after('swap_block')
-        def swap_block_info(self):
-            print(f'{self.name} is swapped out and blocked')
+    @after('swap_block')
+    def swap_block_info(self):
+        print(f'{self.name} is swapped out and blocked')
 
 
 def transition(process, event, event_name):
