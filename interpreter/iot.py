@@ -1,4 +1,4 @@
-from pyparsing import Word, OneOrMore, Optional, Group, Suppress, alphanums
+from pyparsing import Word, OneOrMore, Optional, Group, Suppress, alphanums, ParseException
 
 
 class Boiler:
@@ -98,6 +98,7 @@ class Fridge:
 
 
 def main():
+    # Parser configuration
     word = Word(alphanums)
     command = Group(OneOrMore(word))
     token = Suppress("->")
@@ -105,6 +106,7 @@ def main():
     argument = Group(OneOrMore(word))
     event = command + token + device + Optional(token + argument)
 
+    # Initialize devices
     gate = Gate()
     garage = Garage()
     airco = Aircondition()
@@ -112,50 +114,94 @@ def main():
     boiler = Boiler()
     fridge = Fridge()
 
-    tests = ('open -> gate',
-             'close -> garage',
-             'turn on -> air condition',
-             'turn off -> heating',
-             'increase -> boiler temperature -> 5 degrees',
-             'decrease -> fridge temperature -> 2 degrees')
-    open_actions = {'gate': gate.open,
-                    'garage': garage.open,
-                    'air condition': airco.turn_on,
-                    'heating': heating.turn_on,
-                    'boiler temperature': boiler.increase_temperature,
-                    'fridge temperature': fridge.increase_temperature}
-    close_actions = {'gate': gate.close,
-                     'garage': garage.close,
-                     'air condition': airco.turn_off,
-                     'heating': heating.turn_off,
-                     'boiler temperature': boiler.decrease_temperature,
-                     'fridge temperature': fridge.decrease_temperature}
+    # Define available actions
+    open_actions = {
+        'gate': gate.open,
+        'garage': garage.open,
+        'air condition': airco.turn_on,
+        'heating': heating.turn_on,
+        'boiler temperature': boiler.increase_temperature,
+        'fridge temperature': fridge.increase_temperature
+    }
+    
+    close_actions = {
+        'gate': gate.close,
+        'garage': garage.close,
+        'air condition': airco.turn_off,
+        'heating': heating.turn_off,
+        'boiler temperature': boiler.decrease_temperature,
+        'fridge temperature': fridge.decrease_temperature
+    }
 
-    for t in tests:
-        parsed = event.parseString(t)
-        if len(parsed) == 2:  # no argument
-            cmd, dev = parsed
-            cmd_str, dev_str = ' '.join(cmd), ' '.join(dev)
-            if 'open' in cmd_str or 'turn on' in cmd_str:
-                open_actions[dev_str]()
-            elif 'close' in cmd_str or 'turn off' in cmd_str:
-                close_actions[dev_str]()
-        elif len(parsed) == 3:  # argument
-            cmd, dev, arg = parsed
-            cmd_str = ' '.join(cmd)
-            dev_str = ' '.join(dev)
-            arg_str = ' '.join(arg)
-            num_arg = 0
+    print("Smart Home Control System")
+    print("Available commands examples:")
+    print("- open -> gate")
+    print("- close -> garage") 
+    print("- turn on -> air condition")
+    print("- turn off -> heating")
+    print("- increase -> boiler temperature -> 5 degrees")
+    print("- decrease -> fridge temperature -> 2 degrees")
+    print("Type 'exit' to quit")
+    print("Type 'status' to see devices state")
+
+    while True:
+        try:
+            command = input("\nEnter command: ").strip()
+            
+            if command.lower() == 'exit':
+                break
+                
+            if command.lower() == 'status':
+                print("\nCurrent devices state:")
+                print(f"Gate: {gate}")
+                print(f"Garage: {garage}")
+                print(f"Air condition: {airco}")
+                print(f"Heating: {heating}")
+                print(f"Boiler: {boiler}")
+                print(f"Fridge: {fridge}")
+                continue
+
+            # Parse and execute command
             try:
-                # extract the numeric part
-                num_arg = int(arg_str.split()[0])
-            except ValueError as err:
-                print(f"expected number but got: '{arg_str[0]}'")
-            if 'increase' in cmd_str and num_arg > 0:
-                open_actions[dev_str](num_arg)
-            elif 'decrease' in cmd_str and num_arg > 0:
-                close_actions[dev_str](num_arg)
-
+                parsed = event.parseString(command)
+                
+                if len(parsed) == 2:  # No argument
+                    cmd, dev = parsed
+                    cmd_str, dev_str = ' '.join(cmd), ' '.join(dev)
+                    
+                    if 'open' in cmd_str or 'turn on' in cmd_str:
+                        open_actions[dev_str]()
+                    elif 'close' in cmd_str or 'turn off' in cmd_str:
+                        close_actions[dev_str]()
+                        
+                elif len(parsed) == 3:  # With argument
+                    cmd, dev, arg = parsed
+                    cmd_str = ' '.join(cmd)
+                    dev_str = ' '.join(dev)
+                    arg_str = ' '.join(arg)
+                    
+                    try:
+                        num_arg = int(arg_str.split()[0])
+                        if num_arg <= 0:
+                            print("Error: Temperature change must be positive")
+                            continue
+                            
+                        if 'increase' in cmd_str:
+                            open_actions[dev_str](num_arg)
+                        elif 'decrease' in cmd_str:
+                            close_actions[dev_str](num_arg)
+                            
+                    except ValueError:
+                        print(f"Error: Invalid number format in '{arg_str}'")
+                        
+            except ParseException:
+                print("Error: Invalid command format")
+            except KeyError:
+                print("Error: Unknown device or command")
+                
+        except KeyboardInterrupt:
+            print("\nExiting...")
+            break
 
 if __name__ == "__main__":
     main()
