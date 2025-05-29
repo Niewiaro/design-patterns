@@ -44,16 +44,14 @@ def main():
             if word == 'quit':
                 print('bye')
                 return
-        strategy_picked = None
-        strategies = {'1': all_unique_set, '2': all_unique_sort}
-        while strategy_picked not in strategies.keys():
-            strategy_picked = input(STRAT_IN_DESC)
-        try:
-            strategy = strategies[strategy_picked]
-            result = all_unique(word, strategy)
-            print(f'allUnique({word}): {result}')
-        except KeyError as err:
-            print(f'Incorrect option: {strategy_picked}')
+
+        if len(word) < LIMIT:
+            strategy_picked = all_unique_sort
+        else:
+            strategy_picked = all_unique_set
+
+        result = all_unique(word, strategy_picked)
+        print(f'allUnique({word}): {result}')
 
 
 if __name__ == '__main__':
