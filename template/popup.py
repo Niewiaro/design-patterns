@@ -1,10 +1,10 @@
-import threading
-
 def popup(msg: str) -> None:
     import win32api
     win32api.MessageBox(0, msg, "Popup", 0x00001000)
 
-def popup_thread(items):
+def popup_thread(items: list[str] | str) -> None:
+    import threading
+
     threads = []
     for item in items:
         def thread_func(it=item):
