@@ -23,11 +23,11 @@ def cow_style(msg):
 
 def car_window_style(msg):
     # Center the message to fit the window (27 chars wide)
-    window_msg = msg.center(20)
+    window_msg = msg.center(23)
     art = [
         "                                              _____________",
         "                                  ..---:::::::-----------. ::::;;.",
-        f"                               .' {window_msg}   ;;   \\  \":._______,",
+        f"                               .'{window_msg} ;;   \\  \":._______,",
         "                            .''                          ;     \\   \"\\-----|;",
         "                          .'                            ;;      ;   \\\\  /|;",
         "                        .'                              ;   _____;   \\\\/|;",
